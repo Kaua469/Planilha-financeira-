@@ -39,18 +39,35 @@ export default function LandingPage() {
           <div className="w-3 h-3 rounded-full bg-yellow-500" />
           <div className="w-3 h-3 rounded-full bg-green-500" />
         </div>
-        <div className="p-12 opacity-50 group-hover:opacity-100 transition-opacity duration-700">
-           {/* Placeholder for a preview or decorative element */}
+        <div className="p-12 opacity-80 group-hover:opacity-100 transition-opacity duration-700">
            <div className="grid grid-cols-4 gap-6">
-              {[1,2,3,4].map(i => (
-                <div key={i} className="h-32 rounded-2xl bg-[#151924] border border-[#242938]" />
+              {[
+                { label: 'Receitas', val: 'R$ 12k' },
+                { label: 'Despesas', val: 'R$ 4k' },
+                { label: 'Metas', val: '85%' },
+                { label: 'Saldo', val: 'R$ 8k' }
+              ].map((item, i) => (
+                <div key={i} className="p-4 rounded-2xl bg-[#151924] border border-[#242938] flex flex-col justify-center text-left">
+                  <span className="text-[10px] text-[#9BA3AF] uppercase tracking-widest">{item.label}</span>
+                  <span className="text-xl font-bold text-white">{item.val}</span>
+                </div>
               ))}
-              <div className="col-span-3 h-64 rounded-2xl bg-[#151924] border border-[#242938]" />
-              <div className="h-64 rounded-2xl bg-[#151924] border border-[#242938]" />
+              <div className="col-span-3 h-64 rounded-2xl bg-[#151924] border border-[#242938] p-6 relative overflow-hidden">
+                <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#C80313]/20 to-transparent" />
+                <div className="flex justify-between items-end h-full gap-2">
+                  {[40, 70, 45, 90, 65, 80, 50, 95, 75, 60].map((h, i) => (
+                    <div key={i} className="w-full bg-[#C80313]/40 rounded-t-md" style={{ height: `${h}%` }} />
+                  ))}
+                </div>
+              </div>
+              <div className="h-64 rounded-2xl bg-[#151924] border border-[#242938] p-4">
+                <div className="space-y-3">
+                  {[1,2,3,4].map(i => (
+                    <div key={i} className="h-8 w-full bg-[#0F1117] rounded-lg border border-[#242938]" />
+                  ))}
+                </div>
+              </div>
            </div>
-        </div>
-        <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
-          <span className="text-[#C80313] font-bold tracking-widest text-sm uppercase opacity-40">Visualização do Sistema Enterprise</span>
         </div>
       </div>
     </div>

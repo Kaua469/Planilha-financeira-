@@ -1,23 +1,83 @@
 "use client"
 
+import React, { useEffect, useState } from 'react'
 import { DashboardShell } from "@/components/layout/dashboard-shell"
 import { StatCard } from "@/components/dashboard/stat-card"
 import { BalanceChart } from "@/components/dashboard/balance-chart"
 import { InsightsCard } from "@/components/dashboard/insights-card"
-import { useFinancial } from "@/lib/context/financial-context"
+import { useFinancial } from '@/lib/context/financial-context'
 import { AddTransactionDialog } from "@/components/dashboard/add-transaction-dialog"
+import { createClient } from '@/lib/supabase/client'
+import { toast } from 'sonner'
 
 export default function DashboardPage() {
   const { context } = useFinancial()
+  const [stats, setStats] = useState({
+    balance: 0,
+    income: 0,
+    expense: 0,
+    goals: 0
+  })
+  const [loading, setLoading] = useState(true)
+  const supabase = createClient()
+
+  useEffect(() => {
+    fetchDashboardData()
+  }, [context])
+
+  async function fetchDashboardData() {
+    setLoading(true)
+    try {
+      // 1. Buscar todas as transações do contexto
+      const { data: transData } = await supabase
+        .from('transactions')
+        .select('*')
+        .eq('context', context)
+
+      // 2. Buscar metas
+      const { data: goalsData } = await supabase
+        .from('goals')
+        .select('*')
+        .eq('context', context)
+
+      if (transData) {
+        const totalIncome = transData
+          .filter(t => t.type === 'income')
+          .reduce((acc, t) => acc + Number(t.amount), 0)
+        
+        const totalExpense = transData
+          .filter(t => t.type === 'expense')
+          .reduce((acc, t) => acc + Number(t.amount), 0)
+
+        // Cálculo simples de progresso de metas
+        let goalsProgress = 0
+        if (goalsData && goalsData.length > 0) {
+          const totalTarget = goalsData.reduce((acc, g) => acc + Number(g.target_amount), 0)
+          const totalCurrent = goalsData.reduce((acc, g) => acc + Number(g.current_amount), 0)
+          goalsProgress = (totalCurrent / totalTarget) * 100
+        }
+
+        setStats({
+          balance: totalIncome - totalExpense,
+          income: totalIncome,
+          expense: totalExpense,
+          goals: goalsProgress
+        })
+      }
+    } catch (error) {
+      toast.error('Erro ao atualizar dashboard')
+    }
+    setLoading(false)
+  }
   
   return (
     <DashboardShell>
       <div className="space-y-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-white tracking-tight">Dashboard Overview</h1>
+            <h1 className="text-3xl font-bold text-white tracking-tight">Visão Geral</h1>
             <p className="text-[#9BA3AF]">
-              Contexto Ativo: <span className="text-[#C80313] font-bold uppercase">{context === 'personal' ? '👤 Pessoal' : '🏢 Corporativo'}</span>
+              Acompanhando: <span className="text-[#C80313] font-bold uppercase">{context === 'personal' ? '👤 Pessoal' : '🏢 Corporativo'}</span>
             </p>
           </div>
           <AddTransactionDialog />
@@ -25,30 +85,30 @@ export default function DashboardPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <StatCard 
-            title="Saldo Pessoal Atual" 
-            value="R$ 28.751,45" 
-            subtext="Conta Corrente e Poupança" 
-            trend={12.5}
+            title="Saldo Total" 
+            value={new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(stats.balance)}
+            subtext="Acumulado no período" 
+            trend={0}
           />
           <StatCard 
             title="Receitas" 
-            value="R$ 15.200,00" 
-            subtext="Este mês" 
+            value={new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(stats.income)}
+            subtext="Entradas totais" 
             type="income"
-            trend={8.2}
+            trend={0}
           />
           <StatCard 
             title="Despesas" 
-            value="R$ 8.450,32" 
-            subtext="Este mês" 
+            value={new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(stats.expense)}
+            subtext="Saídas totais" 
             type="expense"
-            trend={-3.1}
+            trend={0}
           />
           <StatCard 
             title="Metas" 
-            value="65%" 
-            subtext="Carro Novo — R$ 45.000,00" 
-            trend={5.0}
+            value={`${stats.goals.toFixed(0)}%`} 
+            subtext="Progresso médio" 
+            trend={0}
           />
         </div>
 
@@ -57,7 +117,7 @@ export default function DashboardPage() {
             <BalanceChart />
           </div>
           <div className="space-y-6">
-            <h3 className="text-lg font-bold text-white uppercase tracking-widest text-sm">Insights & Alertas</h3>
+            <h3 className="text-lg font-bold text-white uppercase tracking-widest text-[10px]">Sugestões & Alertas</h3>
             <InsightsCard />
           </div>
         </div>
