@@ -29,19 +29,20 @@ export function BalanceChart() {
       </div>
       
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data}>
+        <BarChart data={data} margin={{ top: 10, right: 10, left: 20, bottom: 20 }}>
           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#242938" />
           <XAxis 
             dataKey="name" 
             axisLine={false} 
             tickLine={false} 
-            tick={{ fill: '#9BA3AF', fontSize: 12 }}
+            tick={{ fill: '#9BA3AF', fontSize: 11 }}
             dy={10}
           />
           <YAxis 
+            width={80}
             axisLine={false} 
             tickLine={false} 
-            tick={{ fill: '#9BA3AF', fontSize: 12 }}
+            tick={{ fill: '#9BA3AF', fontSize: 11 }}
             tickFormatter={(value) => `R$ ${value}`}
           />
           <Tooltip 

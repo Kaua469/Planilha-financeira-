@@ -4,9 +4,8 @@ import { DashboardShell } from "@/components/layout/dashboard-shell"
 import { StatCard } from "@/components/dashboard/stat-card"
 import { BalanceChart } from "@/components/dashboard/balance-chart"
 import { InsightsCard } from "@/components/dashboard/insights-card"
-import { Button } from "@/components/ui/button"
-import { Plus } from "lucide-react"
 import { useFinancial } from "@/lib/context/financial-context"
+import { AddTransactionDialog } from "@/components/dashboard/add-transaction-dialog"
 
 export default function DashboardPage() {
   const { context } = useFinancial()
@@ -21,10 +20,7 @@ export default function DashboardPage() {
               Contexto Ativo: <span className="text-[#C80313] font-bold uppercase">{context === 'personal' ? '👤 Pessoal' : '🏢 Corporativo'}</span>
             </p>
           </div>
-          <Button className="bg-[#C80313] hover:bg-[#E1061B] text-white rounded-xl px-6 py-6 shadow-[0_0_20px_rgba(200,3,19,0.3)] transition-all duration-300 hover:scale-[1.05]">
-            <Plus className="mr-2" size={20} />
-            ADICIONAR TRANSAÇÃO
-          </Button>
+          <AddTransactionDialog />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

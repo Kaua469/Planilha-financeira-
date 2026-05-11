@@ -8,6 +8,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { useRouter } from 'next/navigation'
 import { Logo } from '@/components/layout/logo'
+import { cn } from '@/lib/utils'
 
 const steps = [
   {
@@ -92,20 +93,34 @@ export default function OnboardingPage() {
                       <Input 
                         type={field.type} 
                         placeholder={field.placeholder}
+                        onChange={(e) => setFormData({...formData, [field.name]: e.target.value})}
                         className="bg-[#0F1117] border-[#242938] text-white h-12 focus:border-[#C80313]"
                       />
                     </div>
                   ))}
 
-                  {steps[currentStep].options?.map((option) => (
-                    <button
-                      key={option.value}
-                      onClick={() => setFormData({...formData, context: option.value})}
-                      className="w-full p-4 rounded-xl border border-[#242938] bg-[#0F1117] text-left hover:border-[#C80313] hover:bg-[#151924] transition-all group"
-                    >
-                      <span className="text-lg font-medium text-[#9BA3AF] group-hover:text-white">{option.label}</span>
-                    </button>
-                  ))}
+                  {steps[currentStep].options?.map((option) => {
+                    const isSelected = formData.context === option.value;
+                    return (
+                      <button
+                        key={option.value}
+                        onClick={() => setFormData({...formData, context: option.value})}
+                        className={cn(
+                          "w-full p-4 rounded-xl border transition-all group text-left",
+                          isSelected 
+                            ? "border-[#C80313] bg-[#C80313]/10 shadow-[0_0_15px_rgba(200,3,19,0.2)]" 
+                            : "border-[#242938] bg-[#0F1117] hover:border-[#C80313]/50"
+                        )}
+                      >
+                        <span className={cn(
+                          "text-lg font-medium transition-colors",
+                          isSelected ? "text-white" : "text-[#9BA3AF] group-hover:text-white"
+                        )}>
+                          {option.label}
+                        </span>
+                      </button>
+                    )
+                  })}
                 </div>
 
                 <div className="flex gap-4 mt-12">

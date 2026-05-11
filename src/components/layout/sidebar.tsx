@@ -12,7 +12,9 @@ import {
   FileText, 
   Settings,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Users,
+  CreditCard
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Logo } from './logo'
@@ -21,11 +23,13 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 
 const menuItems = [
   { label: 'Dashboard', icon: LayoutDashboard, href: '/dashboard' },
-  { label: 'Transactions', icon: ArrowLeftRight, href: '/dashboard/transactions' },
-  { label: 'Goals', icon: Target, href: '/dashboard/goals' },
-  { label: 'Reports', icon: FilePieChart, href: '/dashboard/reports' },
+  { label: 'Transações', icon: ArrowLeftRight, href: '/dashboard/transactions' },
+  { label: 'Cartão de Crédito', icon: CreditCard, href: '/dashboard/credit-cards' },
+  { label: 'Assinaturas', icon: Users, href: '/dashboard/subscriptions' },
+  { label: 'Metas', icon: Target, href: '/dashboard/goals' },
+  { label: 'Relatórios', icon: FilePieChart, href: '/dashboard/reports' },
   { label: 'Insights', icon: Lightbulb, href: '/dashboard/insights' },
-  { label: 'Financial PDFs', icon: FileText, href: '/dashboard/pdfs' },
+  { label: 'PDFs Financeiros', icon: FileText, href: '/dashboard/pdfs' },
 ]
 
 export function Sidebar() {

@@ -1,7 +1,7 @@
 "use client"
 
 import React from 'react'
-import { Search, Bell, User, Building2, UserCircle } from 'lucide-react'
+import { Bell, Search, User, Settings, LogOut } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { 
   DropdownMenu, 
@@ -12,82 +12,111 @@ import {
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { cn } from '@/lib/utils'
-
+import { Button } from '@/components/ui/button'
 import { useFinancial } from '@/lib/context/financial-context'
-
-export function ContextSwitcher() {
-  const { context, setContext } = useFinancial()
-
-  return (
-    <div className="flex items-center bg-[#151924] p-1 rounded-xl border border-[#242938]">
-      <button
-        onClick={() => setContext('personal')}
-        className={cn(
-          "flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 text-sm font-medium",
-          context === 'personal' 
-            ? "bg-white text-black shadow-lg" 
-            : "text-[#9BA3AF] hover:text-white"
-        )}
-      >
-        <UserCircle size={16} />
-        Pessoal
-      </button>
-      <button
-        onClick={() => setContext('corporate')}
-        className={cn(
-          "flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 text-sm font-medium",
-          context === 'corporate' 
-            ? "bg-white text-black shadow-lg" 
-            : "text-[#9BA3AF] hover:text-white"
-        )}
-      >
-        <Building2 size={16} />
-        Kadron
-      </button>
-    </div>
-  )
-}
+import { createClient } from '@/lib/supabase/client'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { toast } from 'sonner'
 
 export function Topbar() {
+  const { context, setContext } = useFinancial()
+  const supabase = createClient()
+  const router = useRouter()
+  const [profile, setProfile] = React.useState<any>(null)
+
+  React.useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) {
+        supabase.from('profiles').select('*').eq('id', user.id).single()
+          .then(({ data }) => setProfile(data))
+      }
+    })
+  }, [])
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    toast.success('Até logo!')
+    router.push('/login')
+  }
+
   return (
-    <header className="h-[80px] border-b border-[#242938] bg-[#07090D]/80 backdrop-blur-md sticky top-0 z-40 px-8 flex items-center justify-between">
-      <div className="flex items-center gap-8 flex-1">
-        <h2 className="text-sm font-semibold tracking-widest text-[#9BA3AF] uppercase hidden lg:block">
-          KADRON | <span className="text-white">DASHBOARD PERFECT</span>
-        </h2>
-        
-        <div className="relative max-w-md w-full">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9BA3AF]" size={18} />
-          <Input 
-            placeholder="Busca global..." 
-            className="pl-10 bg-[#151924] border-[#242938] text-white placeholder:text-[#9BA3AF] rounded-xl focus:border-[#C80313] transition-all"
-          />
+    <header className="h-16 border-b border-[#242938] bg-[#0F1117]/80 backdrop-blur-md sticky top-0 z-40 px-8 flex items-center justify-between">
+      <div className="flex items-center gap-4">
+        <div className="bg-[#151924] border border-[#242938] rounded-xl p-1 flex items-center gap-1">
+          <Button 
+            onClick={() => setContext('personal')}
+            variant={context === 'personal' ? 'default' : 'ghost'}
+            className={context === 'personal' ? 'bg-[#C80313] hover:bg-[#E1061B] h-8 text-xs' : 'h-8 text-xs text-[#9BA3AF]'}
+          >
+            Pessoal
+          </Button>
+          <Button 
+            onClick={() => setContext('corporate')}
+            variant={context === 'corporate' ? 'default' : 'ghost'}
+            className={context === 'corporate' ? 'bg-[#C80313] hover:bg-[#E1061B] h-8 text-xs' : 'h-8 text-xs text-[#9BA3AF]'}
+          >
+            Corporativo
+          </Button>
         </div>
       </div>
 
       <div className="flex items-center gap-6">
-        <ContextSwitcher />
-        
-        <button className="relative text-[#9BA3AF] hover:text-white transition-colors">
-          <Bell size={22} />
-          <span className="absolute -top-1 -right-1 w-2 h-2 bg-[#C80313] rounded-full" />
-        </button>
-
+        {/* Notificações */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Avatar className="cursor-pointer border-2 border-transparent hover:border-[#C80313] transition-all">
+            <button className="relative p-2 text-[#9BA3AF] hover:text-white transition-colors">
+              <Bell size={20} />
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#C80313] rounded-full border-2 border-[#0F1117]" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-80 bg-[#151924] border-[#242938] text-white p-4">
+            <div className="text-center py-8">
+              <Bell className="mx-auto mb-3 text-[#242938]" size={32} />
+              <p className="text-sm font-bold">Sem notificações</p>
+              <p className="text-xs text-[#9BA3AF] mt-1">Você está em dia com suas finanças!</p>
+            </div>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        {/* Perfil do Usuário */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Avatar className="cursor-pointer border-2 border-[#242938] hover:border-[#C80313] transition-all">
               <AvatarImage src="" />
-              <AvatarFallback className="bg-[#C80313] text-white">KB</AvatarFallback>
+              <AvatarFallback className="bg-[#C80313] text-white font-bold">
+                {profile?.full_name?.substring(0, 2).toUpperCase() || 'KB'}
+              </AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56 bg-[#151924] border-[#242938] text-white">
-            <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
+            <DropdownMenuLabel className="font-normal p-4">
+              <div className="flex flex-col space-y-1">
+                <p className="text-sm font-bold leading-none">{profile?.full_name || 'Usuário Kadron'}</p>
+                <p className="text-xs leading-none text-[#9BA3AF]">{profile?.email}</p>
+              </div>
+            </DropdownMenuLabel>
             <DropdownMenuSeparator className="bg-[#242938]" />
-            <DropdownMenuItem className="hover:bg-[#C80313]/10 cursor-pointer">Perfil</DropdownMenuItem>
-            <DropdownMenuItem className="hover:bg-[#C80313]/10 cursor-pointer">Configurações</DropdownMenuItem>
+            <DropdownMenuItem asChild className="p-3 cursor-pointer focus:bg-[#C80313] focus:text-white transition-colors">
+              <Link href="/dashboard/settings" className="flex items-center w-full">
+                <User className="mr-2" size={16} />
+                <span>Perfil</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild className="p-3 cursor-pointer focus:bg-[#C80313] focus:text-white transition-colors">
+              <Link href="/dashboard/settings" className="flex items-center w-full">
+                <Settings className="mr-2" size={16} />
+                <span>Configurações</span>
+              </Link>
+            </DropdownMenuItem>
             <DropdownMenuSeparator className="bg-[#242938]" />
-            <DropdownMenuItem className="text-red-500 hover:bg-red-500/10 cursor-pointer">Sair</DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={handleLogout}
+              className="p-3 cursor-pointer text-red-500 focus:bg-red-500/10 focus:text-red-500 transition-colors"
+            >
+              <LogOut className="mr-2" size={16} />
+              <span>Sair</span>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
