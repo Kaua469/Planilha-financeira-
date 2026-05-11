@@ -41,19 +41,22 @@ export default function DashboardPage() {
         .eq('context', context)
 
       if (transData) {
-        const totalIncome = transData
+        const transactions = transData as any[]
+        const goals = (goalsData || []) as any[]
+
+        const totalIncome = transactions
           .filter(t => t.type === 'income')
           .reduce((acc, t) => acc + Number(t.amount), 0)
         
-        const totalExpense = transData
+        const totalExpense = transactions
           .filter(t => t.type === 'expense')
           .reduce((acc, t) => acc + Number(t.amount), 0)
 
         // Cálculo simples de progresso de metas
         let goalsProgress = 0
-        if (goalsData && goalsData.length > 0) {
-          const totalTarget = goalsData.reduce((acc, g) => acc + Number(g.target_amount), 0)
-          const totalCurrent = goalsData.reduce((acc, g) => acc + Number(g.current_amount), 0)
+        if (goals.length > 0) {
+          const totalTarget = goals.reduce((acc, g) => acc + Number(g.target_amount), 0)
+          const totalCurrent = goals.reduce((acc, g) => acc + Number(g.current_amount), 0)
           goalsProgress = (totalCurrent / totalTarget) * 100
         }
 
