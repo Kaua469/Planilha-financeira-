@@ -41,8 +41,12 @@ const steps = [
 ]
 
 export default function OnboardingPage() {
-  const [currentStep, setCurrentStep] = React.useState(0)
-  const [formData, setFormData] = React.useState({})
+  const [currentStep, setCurrentStep] = useState(0)
+  const [formData, setFormData] = useState<any>({
+    context: 'personal',
+    experience: 'beginner',
+    goal: 'organization'
+  })
   const router = useRouter()
 
   const handleNext = () => {
