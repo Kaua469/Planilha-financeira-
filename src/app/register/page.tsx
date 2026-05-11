@@ -28,6 +28,14 @@ export default function RegisterPage() {
     const password = formData.get('password') as string
     const full_name = formData.get('full_name') as string
 
+    // Validação de Senha Forte
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/
+    if (!passwordRegex.test(password)) {
+      toast.error('A senha deve ter no mínimo 8 caracteres, uma letra maiúscula, uma minúscula e um número.')
+      setLoading(false)
+      return
+    }
+
     const { error } = await supabase.auth.signUp({
       email,
       password,
@@ -114,6 +122,9 @@ export default function RegisterPage() {
                 required
                 className="bg-[#0F1117] border-[#242938] text-white h-12 focus:border-[#C80313]"
               />
+              <p className="text-xs text-[#9BA3AF] mt-1">
+                A senha deve ter no mínimo 8 caracteres, uma letra maiúscula, uma minúscula e um número.
+              </p>
             </div>
 
             <Button 
