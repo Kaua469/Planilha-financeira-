@@ -30,7 +30,7 @@ export function Topbar() {
       const user = res.data?.user
       if (user) {
         supabase.from('profiles').select('*').eq('id', user.id).single()
-          .then(({ data }) => setProfile(data))
+          .then((res: any) => setProfile(res.data))
       }
     })
   }, [])
