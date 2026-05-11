@@ -1,14 +1,14 @@
 import { createBrowserClient } from '@supabase/ssr'
 
 export function createClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-  // Se as chaves não existirem (ex: durante o build da Vercel), 
-  // retornamos um cliente "vazio" apenas para não quebrar a compilação.
-  if (!url || !key) {
+  // Se não estiver no navegador (ou seja, está no build da Vercel), 
+  // retornamos um objeto seguro que não quebra a compilação.
+  if (typeof window === 'undefined') {
     return {} as any
   }
+
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL!
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
   return createBrowserClient(url, key)
 }
