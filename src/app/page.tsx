@@ -1,0 +1,58 @@
+import { Logo } from "@/components/layout/logo"
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
+import { motion } from "framer-motion"
+
+export default function LandingPage() {
+  return (
+    <div className="min-h-screen bg-[#07090D] text-white flex flex-col items-center justify-center p-6 text-center">
+      <Logo className="mb-12 scale-150" />
+      
+      <div className="max-w-3xl space-y-6">
+        <h1 className="text-5xl md:text-7xl font-bold tracking-tighter bg-gradient-to-b from-white to-[#9BA3AF] bg-clip-text text-transparent">
+          A nova era da sua <span className="text-[#C80313]">inteligência financeira.</span>
+        </h1>
+        
+        <p className="text-xl text-[#9BA3AF] max-w-xl mx-auto">
+          Gestão pessoal e corporativa em um único ecossistema premium. 
+          Performance visual, organização extrema e insights de alto nível.
+        </p>
+
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8">
+          <Link href="/login">
+            <Button className="bg-[#C80313] hover:bg-[#E1061B] text-white px-8 py-7 rounded-xl text-lg font-bold shadow-[0_0_30px_rgba(200,3,19,0.4)] transition-all hover:scale-105">
+              COMEÇAR AGORA
+            </Button>
+          </Link>
+          <Link href="/about">
+            <Button variant="outline" className="border-[#242938] text-white px-8 py-7 rounded-xl text-lg hover:bg-[#151924] transition-all">
+              SAIBA MAIS
+            </Button>
+          </Link>
+        </div>
+      </div>
+
+      <div className="mt-24 w-full max-w-5xl aspect-video rounded-3xl border border-[#242938] bg-[#0F1117] overflow-hidden shadow-2xl relative group">
+        <div className="absolute inset-0 bg-gradient-to-t from-[#07090D] via-transparent to-transparent z-10" />
+        <div className="absolute top-4 left-4 flex gap-2">
+          <div className="w-3 h-3 rounded-full bg-red-500" />
+          <div className="w-3 h-3 rounded-full bg-yellow-500" />
+          <div className="w-3 h-3 rounded-full bg-green-500" />
+        </div>
+        <div className="p-12 opacity-50 group-hover:opacity-100 transition-opacity duration-700">
+           {/* Placeholder for a preview or decorative element */}
+           <div className="grid grid-cols-4 gap-6">
+              {[1,2,3,4].map(i => (
+                <div key={i} className="h-32 rounded-2xl bg-[#151924] border border-[#242938]" />
+              ))}
+              <div className="col-span-3 h-64 rounded-2xl bg-[#151924] border border-[#242938]" />
+              <div className="h-64 rounded-2xl bg-[#151924] border border-[#242938]" />
+           </div>
+        </div>
+        <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
+          <span className="text-[#C80313] font-bold tracking-widest text-sm uppercase opacity-40">Visualização do Sistema Enterprise</span>
+        </div>
+      </div>
+    </div>
+  )
+}
