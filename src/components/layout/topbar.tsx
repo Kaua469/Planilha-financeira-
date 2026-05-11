@@ -26,7 +26,8 @@ export function Topbar() {
   const [profile, setProfile] = React.useState<any>(null)
 
   React.useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
+    supabase.auth.getUser().then((res: any) => {
+      const user = res.data?.user
       if (user) {
         supabase.from('profiles').select('*').eq('id', user.id).single()
           .then(({ data }) => setProfile(data))
