@@ -17,6 +17,8 @@ export default function CreditCardPage() {
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
+  const [selectedMonth, setSelectedMonth] = useState('all')
+
   const { context } = useFinancial()
   const supabase = createClient()
 
@@ -82,6 +84,13 @@ export default function CreditCardPage() {
     return sortOrder === 'asc' ? dateA - dateB : dateB - dateA
   })
 
+  // Aplica o filtro de mês selecionado
+  const filteredEntries = selectedMonth === 'all' 
+    ? sortedEntries 
+    : sortedEntries.filter(([month]) => month === selectedMonth)
+
+  // Lista de todos os meses disponíveis para o select
+  const availableMonths = sortedEntries.map(([month]) => month)
 
   return (
     <DashboardShell>
@@ -99,7 +108,7 @@ export default function CreditCardPage() {
           </div>
         </div>
 
-        <div className="flex gap-4">
+        <div className="flex flex-col md:flex-row gap-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9BA3AF]" size={18} />
             <Input 
@@ -109,6 +118,16 @@ export default function CreditCardPage() {
               className="pl-10 bg-[#151924] border-[#242938] text-white h-12 rounded-xl"
             />
           </div>
+          <select 
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(e.target.value)}
+            className="h-12 px-4 rounded-md border border-[#242938] bg-[#151924] text-white outline-none focus:border-[#C80313] capitalize"
+          >
+            <option value="all">Todos os Meses</option>
+            {availableMonths.map((month) => (
+              <option key={month as string} value={month as string}>{month}</option>
+            ))}
+          </select>
           <Button 
             onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
             variant="outline" 
@@ -125,7 +144,7 @@ export default function CreditCardPage() {
           <div className="p-24 text-center text-[#9BA3AF] bg-[#151924] rounded-2xl border border-[#242938]">Nenhum parcelamento encontrado.</div>
         ) : (
           <div className="space-y-10">
-            {sortedEntries.map(([month, data]: [string, any]) => (
+            {filteredEntries.map(([month, data]: [string, any]) => (
               <div key={month} className="space-y-4 animate-in fade-in slide-in-from-bottom-4">
                 <div className="flex items-center justify-between px-2">
                   <h2 className="text-xl font-bold text-white capitalize">{month}</h2>
