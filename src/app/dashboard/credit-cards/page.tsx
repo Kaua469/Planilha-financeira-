@@ -97,8 +97,8 @@ export default function CreditCardPage() {
       <div className="space-y-8 pb-10">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-white tracking-tight">Faturas do Cartão</h1>
-            <p className="text-[#9BA3AF]">Suas parcelas organizadas por período de pagamento.</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Faturas do Cartão</h1>
+            <p className="text-sm sm:text-base text-[#9BA3AF]">Suas parcelas organizadas por período de pagamento.</p>
           </div>
           <div className="bg-[#151924] border border-[#242938] rounded-2xl px-6 py-4 shadow-lg">
             <p className="text-[#9BA3AF] text-xs uppercase font-bold tracking-widest mb-1">Total Devedor</p>

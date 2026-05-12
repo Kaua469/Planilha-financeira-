@@ -57,8 +57,8 @@ export default function TransactionsPage() {
       <div className="space-y-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-white tracking-tight">Transações</h1>
-            <p className="text-[#9BA3AF]">
+            <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Transações</h1>
+            <p className="text-sm sm:text-base text-[#9BA3AF]">
               Gerenciando fluxo: <span className="text-[#C80313] font-bold uppercase">{context}</span>
             </p>
           </div>

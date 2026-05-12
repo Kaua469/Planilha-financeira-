@@ -31,15 +31,15 @@ export default function ReportsPage() {
   return (
     <DashboardShell>
       <div className="space-y-8">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-white tracking-tight">Financial Reports</h1>
-            <p className="text-[#9BA3AF]">Gere e gerencie seus relatórios em PDF.</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Financial Reports</h1>
+            <p className="text-sm sm:text-base text-[#9BA3AF]">Gere e gerencie seus relatórios em PDF.</p>
           </div>
           <Button 
             onClick={handleExport}
             disabled={loading}
-            className="bg-[#C80313] hover:bg-[#E1061B] text-white px-8 h-12 rounded-xl shadow-[0_0_20px_rgba(200,3,19,0.3)]"
+            className="bg-[#C80313] hover:bg-[#E1061B] text-white px-4 sm:px-8 h-11 sm:h-12 rounded-xl shadow-[0_0_20px_rgba(200,3,19,0.3)] text-sm sm:text-base w-full sm:w-auto"
           >
             {loading ? (
               <div className="flex items-center gap-2">
@@ -55,7 +55,7 @@ export default function ReportsPage() {
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           <Card className="bg-[#151924] border-[#242938]">
             <CardContent className="p-6">
               <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">

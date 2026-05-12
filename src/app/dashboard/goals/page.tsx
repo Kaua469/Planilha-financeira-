@@ -80,8 +80,8 @@ export default function GoalsPage() {
       <div className="space-y-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-white tracking-tight">Metas Financeiras</h1>
-            <p className="text-[#9BA3AF]">Defina seus objetivos e acompanhe sua evolução.</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Metas Financeiras</h1>
+            <p className="text-sm sm:text-base text-[#9BA3AF]">Defina seus objetivos e acompanhe sua evolução.</p>
           </div>
           
           <Dialog open={open} onOpenChange={setOpen}>

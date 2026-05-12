@@ -7,8 +7,8 @@ export default function InsightsPage() {
     <DashboardShell>
       <div className="space-y-8">
         <div>
-          <h1 className="text-3xl font-bold text-white tracking-tight">AI Insights</h1>
-          <p className="text-[#9BA3AF]">Inteligência artificial analisando suas finanças.</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">AI Insights</h1>
+          <p className="text-sm sm:text-base text-[#9BA3AF]">Inteligência artificial analisando suas finanças.</p>
         </div>
 
         <Card className="bg-[#151924] border-[#242938] p-12 flex flex-col items-center justify-center text-center">

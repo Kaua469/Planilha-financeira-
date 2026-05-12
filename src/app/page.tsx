@@ -32,38 +32,38 @@ export default function LandingPage() {
         </div>
       </div>
 
-      <div className="mt-24 w-full max-w-5xl aspect-video rounded-3xl border border-[#242938] bg-[#0F1117] overflow-hidden shadow-2xl relative group">
+      <div className="mt-12 sm:mt-24 w-full max-w-5xl aspect-[4/3] sm:aspect-video rounded-2xl sm:rounded-3xl border border-[#242938] bg-[#0F1117] overflow-hidden shadow-2xl relative group">
         <div className="absolute inset-0 bg-gradient-to-t from-[#07090D] via-transparent to-transparent z-10" />
-        <div className="absolute top-4 left-4 flex gap-2">
-          <div className="w-3 h-3 rounded-full bg-red-500" />
-          <div className="w-3 h-3 rounded-full bg-yellow-500" />
-          <div className="w-3 h-3 rounded-full bg-green-500" />
+        <div className="absolute top-3 left-3 sm:top-4 sm:left-4 flex gap-2">
+          <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-red-500" />
+          <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-yellow-500" />
+          <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-green-500" />
         </div>
-        <div className="p-12 opacity-80 group-hover:opacity-100 transition-opacity duration-700">
-           <div className="grid grid-cols-4 gap-6">
+        <div className="p-4 sm:p-8 lg:p-12 opacity-80 group-hover:opacity-100 transition-opacity duration-700">
+           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6">
               {[
                 { label: 'Receitas', val: 'R$ 12k' },
                 { label: 'Despesas', val: 'R$ 4k' },
                 { label: 'Metas', val: '85%' },
                 { label: 'Saldo', val: 'R$ 8k' }
               ].map((item, i) => (
-                <div key={i} className="p-4 rounded-2xl bg-[#151924] border border-[#242938] flex flex-col justify-center text-left">
-                  <span className="text-[10px] text-[#9BA3AF] uppercase tracking-widest">{item.label}</span>
-                  <span className="text-xl font-bold text-white">{item.val}</span>
+                <div key={i} className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-[#151924] border border-[#242938] flex flex-col justify-center text-left">
+                  <span className="text-[8px] sm:text-[10px] text-[#9BA3AF] uppercase tracking-widest">{item.label}</span>
+                  <span className="text-base sm:text-xl font-bold text-white">{item.val}</span>
                 </div>
               ))}
-              <div className="col-span-3 h-64 rounded-2xl bg-[#151924] border border-[#242938] p-6 relative overflow-hidden">
-                <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#C80313]/20 to-transparent" />
-                <div className="flex justify-between items-end h-full gap-2">
+              <div className="col-span-2 sm:col-span-3 h-32 sm:h-64 rounded-xl sm:rounded-2xl bg-[#151924] border border-[#242938] p-3 sm:p-6 relative overflow-hidden">
+                <div className="absolute bottom-0 left-0 right-0 h-16 sm:h-32 bg-gradient-to-t from-[#C80313]/20 to-transparent" />
+                <div className="flex justify-between items-end h-full gap-1 sm:gap-2">
                   {[40, 70, 45, 90, 65, 80, 50, 95, 75, 60].map((h, i) => (
                     <div key={i} className="w-full bg-[#C80313]/40 rounded-t-md" style={{ height: `${h}%` }} />
                   ))}
                 </div>
               </div>
-              <div className="h-64 rounded-2xl bg-[#151924] border border-[#242938] p-4">
-                <div className="space-y-3">
+              <div className="col-span-2 sm:col-span-1 h-32 sm:h-64 rounded-xl sm:rounded-2xl bg-[#151924] border border-[#242938] p-3 sm:p-4">
+                <div className="space-y-2 sm:space-y-3">
                   {[1,2,3,4].map(i => (
-                    <div key={i} className="h-8 w-full bg-[#0F1117] rounded-lg border border-[#242938]" />
+                    <div key={i} className="h-6 sm:h-8 w-full bg-[#0F1117] rounded-lg border border-[#242938]" />
                   ))}
                 </div>
               </div>

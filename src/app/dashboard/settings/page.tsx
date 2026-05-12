@@ -137,18 +137,19 @@ export default function SettingsPage() {
     <DashboardShell>
       <div className="space-y-8">
         <div>
-          <h1 className="text-3xl font-bold text-white tracking-tight">Configurações</h1>
-          <p className="text-[#9BA3AF]">Gerencie seu ecossistema financeiro.</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Configurações</h1>
+          <p className="text-sm sm:text-base text-[#9BA3AF]">Gerencie seu ecossistema financeiro.</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          <div className="space-y-2">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-8">
+          {/* Tabs - horizontal scroll on mobile, vertical on desktop */}
+          <div className="flex lg:flex-col gap-2 overflow-x-auto pb-2 lg:pb-0 lg:space-y-0">
             <Button 
               onClick={() => setActiveTab('profile')}
               variant="ghost" 
               className={cn(
-                "w-full justify-start transition-all",
-                activeTab === 'profile' ? "text-white bg-[#151924] border-l-2 border-[#C80313]" : "text-[#9BA3AF] hover:text-white"
+                "justify-start transition-all whitespace-nowrap flex-shrink-0",
+                activeTab === 'profile' ? "text-white bg-[#151924] border-l-0 lg:border-l-2 border-b-2 lg:border-b-0 border-[#C80313]" : "text-[#9BA3AF] hover:text-white"
               )}
             >
               <User className="mr-2" size={18} /> Perfil
@@ -157,8 +158,8 @@ export default function SettingsPage() {
               onClick={() => setActiveTab('security')}
               variant="ghost" 
               className={cn(
-                "w-full justify-start transition-all",
-                activeTab === 'security' ? "text-white bg-[#151924] border-l-2 border-[#C80313]" : "text-[#9BA3AF] hover:text-white"
+                "justify-start transition-all whitespace-nowrap flex-shrink-0",
+                activeTab === 'security' ? "text-white bg-[#151924] border-l-0 lg:border-l-2 border-b-2 lg:border-b-0 border-[#C80313]" : "text-[#9BA3AF] hover:text-white"
               )}
             >
               <Shield className="mr-2" size={18} /> Segurança
@@ -167,8 +168,8 @@ export default function SettingsPage() {
               onClick={() => setActiveTab('subscription')}
               variant="ghost" 
               className={cn(
-                "w-full justify-start transition-all",
-                activeTab === 'subscription' ? "text-white bg-[#151924] border-l-2 border-[#C80313]" : "text-[#9BA3AF] hover:text-white"
+                "justify-start transition-all whitespace-nowrap flex-shrink-0",
+                activeTab === 'subscription' ? "text-white bg-[#151924] border-l-0 lg:border-l-2 border-b-2 lg:border-b-0 border-[#C80313]" : "text-[#9BA3AF] hover:text-white"
               )}
             >
               <CreditCard className="mr-2" size={18} /> Assinatura
@@ -182,7 +183,7 @@ export default function SettingsPage() {
                   <CardTitle className="text-white">Informações Pessoais</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="flex items-center gap-6">
+                  <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
                     <Avatar className="w-20 h-20 border-2 border-[#242938]">
                       {profile?.avatar_url && <AvatarImage src={profile.avatar_url} alt="Avatar" className="object-cover" />}
                       <AvatarFallback className="bg-[#C80313] text-2xl">

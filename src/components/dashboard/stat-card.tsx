@@ -15,9 +15,9 @@ export function StatCard({ title, value, subtext, trend, type = 'default' }: Sta
     <Card className="bg-[#151924] border-[#242938] overflow-hidden group hover:border-[#C80313] transition-all duration-300 shadow-xl">
       <CardContent className="p-6 relative">
         <div className="space-y-1">
-          <p className="text-sm font-medium text-[#9BA3AF] uppercase tracking-wider">{title}</p>
-          <h3 className="text-3xl font-bold text-white tracking-tight">{value}</h3>
-          <p className="text-xs text-[#AFAFAF]">{subtext}</p>
+          <p className="text-[10px] sm:text-sm font-medium text-[#9BA3AF] uppercase tracking-wider">{title}</p>
+          <h3 className="text-lg sm:text-2xl lg:text-3xl font-bold text-white tracking-tight">{value}</h3>
+          <p className="text-[10px] sm:text-xs text-[#AFAFAF] hidden sm:block">{subtext}</p>
         </div>
         
         {trend !== undefined && (

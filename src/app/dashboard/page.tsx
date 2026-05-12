@@ -76,17 +76,17 @@ export default function DashboardPage() {
   return (
     <DashboardShell>
       <div className="space-y-8">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-white tracking-tight">Visão Geral</h1>
-            <p className="text-[#9BA3AF]">
+            <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Visão Geral</h1>
+            <p className="text-sm sm:text-base text-[#9BA3AF]">
               Acompanhando: <span className="text-[#C80313] font-bold uppercase">{context === 'personal' ? '👤 Pessoal' : '🏢 Corporativo'}</span>
             </p>
           </div>
           <AddTransactionDialog />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
           <StatCard 
             title="Saldo Total" 
             value={new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(stats.balance)}
@@ -115,7 +115,7 @@ export default function DashboardPage() {
           />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
           <div className="lg:col-span-2">
             <BalanceChart />
           </div>
