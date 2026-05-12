@@ -27,6 +27,7 @@ export function AddTransactionDialog() {
     const type = formData.get('type') as 'income' | 'expense'
     const method = formData.get('payment_method') as string
     const installments = parseInt(formData.get('installments') as string || '1')
+    const date = formData.get('date') as string || new Date().toISOString().split('T')[0]
 
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -38,7 +39,7 @@ export function AddTransactionDialog() {
       context,
       payment_method: method,
       installments: method === 'credit' ? installments : 1,
-      date: new Date().toISOString().split('T')[0]
+      date: date
     }).select()
 
     if (error) {
@@ -50,7 +51,8 @@ export function AddTransactionDialog() {
         const baseAmount = amount / installments
         
         for (let i = 1; i <= installments; i++) {
-          const dueDate = new Date()
+          // Usa a data selecionada como base para as parcelas
+          const dueDate = new Date(date + 'T12:00:00')
           dueDate.setMonth(dueDate.getMonth() + i)
           
           instList.push({
@@ -106,6 +108,18 @@ export function AddTransactionDialog() {
               </select>
             </div>
           </div>
+          
+          <div className="space-y-2">
+            <Label>Data da Transação</Label>
+            <Input 
+              name="date" 
+              type="date" 
+              defaultValue={new Date().toISOString().split('T')[0]} 
+              className="bg-[#0F1117] border-[#242938] text-white [color-scheme:dark]" 
+              required 
+            />
+          </div>
+
           
           <div className="space-y-2">
             <Label>Método de Pagamento</Label>
