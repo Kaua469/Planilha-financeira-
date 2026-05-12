@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { DashboardShell } from "@/components/layout/dashboard-shell"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
@@ -22,6 +22,52 @@ export default function SettingsPage() {
   const [password, setPassword] = useState('')
   const supabase = createClient()
   const router = useRouter()
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  async function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setLoading(true)
+    const { data: { user } } = await supabase.auth.getUser()
+    
+    if (!user) {
+      toast.error('Usuário não autenticado')
+      setLoading(false)
+      return
+    }
+
+    const fileExt = file.name.split('.').pop()
+    const fileName = `${user.id}-${Math.random()}.${fileExt}`
+    const filePath = `${fileName}`
+
+    // Fazendo upload para o bucket 'avatars'
+    const { error: uploadError } = await supabase.storage
+      .from('avatars')
+      .upload(filePath, file)
+
+    if (uploadError) {
+      toast.error('Erro! Você criou o bucket "avatars" no painel do Supabase como Public?')
+      setLoading(false)
+      return
+    }
+
+    // Pegar URL pública
+    const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(filePath)
+    
+    // Atualizar perfil
+    const { error: updateError } = await supabase.from('profiles').update({
+      avatar_url: urlData.publicUrl
+    }).eq('id', user.id)
+
+    if (updateError) {
+      toast.error('Erro ao salvar avatar no perfil')
+    } else {
+      toast.success('Avatar atualizado com sucesso!')
+      fetchProfile()
+    }
+    setLoading(false)
+  }
 
   useEffect(() => {
     fetchProfile()
@@ -138,12 +184,22 @@ export default function SettingsPage() {
                 <CardContent className="space-y-6">
                   <div className="flex items-center gap-6">
                     <Avatar className="w-20 h-20 border-2 border-[#242938]">
+                      {profile?.avatar_url && <AvatarImage src={profile.avatar_url} alt="Avatar" className="object-cover" />}
                       <AvatarFallback className="bg-[#C80313] text-2xl">
                         {fullName?.substring(0, 2).toUpperCase() || 'KB'}
                       </AvatarFallback>
                     </Avatar>
                     <div className="space-y-2">
-                      <Button onClick={() => toast.info('Upload em breve')} size="sm" className="bg-[#C80313] hover:bg-[#E1061B]">Alterar Avatar</Button>
+                      <input 
+                        type="file" 
+                        accept="image/png, image/jpeg" 
+                        className="hidden" 
+                        ref={fileInputRef} 
+                        onChange={handleAvatarUpload} 
+                      />
+                      <Button onClick={() => fileInputRef.current?.click()} disabled={loading} size="sm" className="bg-[#C80313] hover:bg-[#E1061B]">
+                        {loading ? 'Enviando...' : 'Alterar Avatar'}
+                      </Button>
                       <p className="text-xs text-[#9BA3AF]">JPG ou PNG. Máximo de 2MB.</p>
                     </div>
                   </div>

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { FileDown, Clock, Download, Trash2, Calendar } from "lucide-react"
 import { Card, CardContent } from '@/components/ui/card'
 
-const mockReports = [
+const initialMockReports = [
   { id: 1, month: "Abril", year: "2024", type: "Completo", date: "2024-05-01" },
   { id: 2, month: "Março", year: "2024", type: "Simplificado", date: "2024-04-02" },
   { id: 3, month: "Fevereiro", year: "2024", type: "Completo", date: "2024-03-05" },
@@ -14,6 +14,7 @@ const mockReports = [
 
 export default function ReportsPage() {
   const [loading, setLoading] = React.useState(false)
+  const [reports, setReports] = React.useState(initialMockReports)
 
   const handleExport = () => {
     setLoading(true)
@@ -21,6 +22,10 @@ export default function ReportsPage() {
       setLoading(false)
       // Toast notification would go here
     }, 2000)
+  }
+
+  const handleDelete = (id: number) => {
+    setReports(reports.filter(r => r.id !== id))
   }
 
   return (
@@ -58,7 +63,7 @@ export default function ReportsPage() {
                 Relatórios Recentes
               </h3>
               <div className="space-y-4">
-                {mockReports.map((report) => (
+                {reports.map((report) => (
                   <div key={report.id} className="flex items-center justify-between p-4 rounded-xl bg-[#0F1117] border border-[#242938] hover:border-[#C80313]/30 transition-all">
                     <div>
                       <p className="font-bold text-white">{report.month} {report.year}</p>
@@ -68,12 +73,15 @@ export default function ReportsPage() {
                       <Button variant="ghost" size="icon" className="text-[#9BA3AF] hover:text-white">
                         <Download size={18} />
                       </Button>
-                      <Button variant="ghost" size="icon" className="text-[#9BA3AF] hover:text-[#C80313]">
+                      <Button onClick={() => handleDelete(report.id)} variant="ghost" size="icon" className="text-[#9BA3AF] hover:text-[#C80313]">
                         <Trash2 size={18} />
                       </Button>
                     </div>
                   </div>
                 ))}
+                {reports.length === 0 && (
+                  <p className="text-center text-[#9BA3AF] py-4">Nenhum relatório encontrado.</p>
+                )}
               </div>
             </CardContent>
           </Card>
