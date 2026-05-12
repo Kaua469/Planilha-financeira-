@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic'
 import React, { useEffect, useState } from 'react'
 import { DashboardShell } from "@/components/layout/dashboard-shell"
 import { Button } from "@/components/ui/button"
-import { CreditCard, Search, CheckCircle2, AlertCircle, Trash2, Calendar } from "lucide-react"
+import { CreditCard, Search, CheckCircle2, AlertCircle, Trash2, Calendar, ArrowDownUp } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
@@ -16,6 +16,7 @@ export default function CreditCardPage() {
   const [installments, setInstallments] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
   const { context } = useFinancial()
   const supabase = createClient()
 
@@ -74,6 +75,14 @@ export default function CreditCardPage() {
     .filter(i => i.status !== 'paid')
     .reduce((acc, i) => acc + Number(i.amount), 0)
 
+  // Transforma o objeto agrupado em um array e aplica a ordenação nos meses
+  const sortedEntries = Object.entries(groupedInstallments).sort((a: any, b: any) => {
+    const dateA = new Date(a[1].items[0].due_date).getTime()
+    const dateB = new Date(b[1].items[0].due_date).getTime()
+    return sortOrder === 'asc' ? dateA - dateB : dateB - dateA
+  })
+
+
   return (
     <DashboardShell>
       <div className="space-y-8 pb-10">
@@ -90,14 +99,24 @@ export default function CreditCardPage() {
           </div>
         </div>
 
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9BA3AF]" size={18} />
-          <Input 
-            placeholder="Buscar por descrição..." 
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 bg-[#151924] border-[#242938] text-white h-12 rounded-xl"
-          />
+        <div className="flex gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9BA3AF]" size={18} />
+            <Input 
+              placeholder="Buscar por descrição..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 bg-[#151924] border-[#242938] text-white h-12 rounded-xl"
+            />
+          </div>
+          <Button 
+            onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
+            variant="outline" 
+            className="h-12 px-6 border-[#242938] bg-[#151924] text-white hover:bg-[#1a1f2d]"
+          >
+            <ArrowDownUp className="mr-2" size={16} />
+            {sortOrder === 'asc' ? 'Mais Antigos' : 'Mais Recentes'}
+          </Button>
         </div>
 
         {loading ? (
@@ -106,7 +125,7 @@ export default function CreditCardPage() {
           <div className="p-24 text-center text-[#9BA3AF] bg-[#151924] rounded-2xl border border-[#242938]">Nenhum parcelamento encontrado.</div>
         ) : (
           <div className="space-y-10">
-            {Object.entries(groupedInstallments).map(([month, data]: [string, any]) => (
+            {sortedEntries.map(([month, data]: [string, any]) => (
               <div key={month} className="space-y-4 animate-in fade-in slide-in-from-bottom-4">
                 <div className="flex items-center justify-between px-2">
                   <h2 className="text-xl font-bold text-white capitalize">{month}</h2>
