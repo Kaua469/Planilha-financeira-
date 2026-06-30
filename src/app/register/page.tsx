@@ -63,7 +63,7 @@ export default function RegisterPage() {
           </div>
           <h2 className="text-3xl font-bold text-white tracking-tight">Verifique seu e-mail</h2>
           <p className="text-[#9BA3AF] leading-relaxed">
-            Enviamos um link de confirmação para o seu e-mail. Por favor, clique no link para ativar sua conta e acessar o Kadron Finance.
+            Enviamos um link de confirmação para o seu e-mail. Por favor, clique no link para ativar sua conta e acessar o Planilha Financeira.
           </p>
           <Button 
             onClick={() => router.push('/login')}

@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState, useRef, Suspense } from 'react'
 import { DashboardShell } from "@/components/layout/dashboard-shell"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
@@ -10,19 +10,34 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import { Shield, User, Bell, CreditCard } from "lucide-react"
 import { createClient } from '@/lib/supabase/client'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
+import { useSubscription } from '@/hooks/useSubscription'
+import { PLAN_DETAILS, PlanType } from '@/types/subscription'
+import { paymentService } from '@/services/payment'
+import { Check } from 'lucide-react'
 
-export default function SettingsPage() {
+function SettingsContent() {
   const [loading, setLoading] = useState(false)
+  const searchParams = useSearchParams()
+  const tabParam = searchParams.get('tab')
   const [activeTab, setActiveTab] = useState<'profile' | 'security' | 'subscription'>('profile')
+  
+  useEffect(() => {
+    if (tabParam === 'profile' || tabParam === 'security' || tabParam === 'subscription') {
+      setActiveTab(tabParam)
+    }
+  }, [tabParam])
+
   const [profile, setProfile] = useState<any>(null)
   const [fullName, setFullName] = useState('')
   const [password, setPassword] = useState('')
   const supabase = createClient()
   const router = useRouter()
   const fileInputRef = useRef<HTMLInputElement>(null)
+  
+  const { subscription, isPro, refresh: refreshSub } = useSubscription()
 
   async function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -98,18 +113,21 @@ export default function SettingsPage() {
     setLoading(false)
   }
 
-  async function handleUpdatePlan(newPlan: string) {
+  async function handleUpdatePlan(newPlan: PlanType) {
     setLoading(true)
-    const { data: { user } } = await supabase.auth.getUser()
-    const { error } = await supabase.from('profiles').update({
-      plan: newPlan
-    }).eq('id', user?.id)
+    if (newPlan === 'pro') {
+      router.push('/dashboard/checkout?plan=pro')
+      setLoading(false)
+      return
+    }
 
-    if (error) {
-      toast.error('Erro ao atualizar plano')
-    } else {
-      toast.success(`Plano ${newPlan.toUpperCase()} ativado com sucesso!`)
+    const res = await paymentService.processCheckout('free')
+    if (res.success) {
+      toast.success('Plano Gratuito ativado!')
+      refreshSub()
       fetchProfile()
+    } else {
+      toast.error(res.error || 'Erro ao atualizar plano')
     }
     setLoading(false)
   }
@@ -273,43 +291,100 @@ export default function SettingsPage() {
             )}
 
             {activeTab === 'subscription' && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                {[
-                  { name: 'free', title: 'Kadron Free', price: 'R$ 0', features: ['Até 50 transações/mês', 'Dashboard Básico', 'Suporte Comum'] },
-                  { name: 'pro', title: 'Kadron Pro', price: 'R$ 49', features: ['Transações Ilimitadas', 'AI Insights', 'Suporte Prioritário', 'Relatórios PDF'] }
-                ].map((plan) => (
-                  <Card key={plan.name} className={cn(
-                    "bg-[#151924] border-2 transition-all cursor-pointer group relative overflow-hidden",
-                    profile?.plan === plan.name ? "border-[#C80313]" : "border-[#242938] hover:border-[#C80313]/50"
-                  )}>
-                    {profile?.plan === plan.name && (
-                      <div className="absolute top-0 right-0 bg-[#C80313] text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg uppercase tracking-widest">Ativo</div>
-                    )}
-                    <CardHeader>
-                      <CardTitle className="text-white text-xl">{plan.title}</CardTitle>
-                      <div className="text-3xl font-bold mt-2">{plan.price}<span className="text-sm text-[#9BA3AF] font-normal">/mês</span></div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-4xl mx-auto">
+                {/* Plano Gratuito */}
+                <Card className={cn(
+                  "bg-[#151924] border-2 transition-all duration-300 relative overflow-hidden group hover:scale-[1.02] flex flex-col justify-between",
+                  !isPro ? "border-[#C80313] shadow-[0_0_20px_rgba(200,3,19,0.15)]" : "border-[#242938] hover:border-[#C80313]/30"
+                )}>
+                  {!isPro && (
+                    <div className="absolute top-0 right-0 bg-[#C80313] text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg uppercase tracking-widest">
+                      Ativo
+                    </div>
+                  )}
+                  <div>
+                    <CardHeader className="p-6">
+                      <CardTitle className="text-white text-xl sm:text-2xl font-bold">{PLAN_DETAILS.free.name}</CardTitle>
+                      <div className="text-3xl font-extrabold text-white mt-2 flex items-baseline gap-1">
+                        {PLAN_DETAILS.free.price}
+                        <span className="text-xs text-[#9BA3AF] font-normal uppercase tracking-wider">/mês</span>
+                      </div>
                     </CardHeader>
-                    <CardContent className="space-y-6">
-                      <ul className="space-y-3">
-                        {plan.features.map(f => (
-                          <li key={f} className="text-sm text-[#9BA3AF] flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-[#C80313] rounded-full" /> {f}
+                    <CardContent className="px-6 pb-6">
+                      <ul className="space-y-3.5">
+                        {PLAN_DETAILS.free.features.map(f => (
+                          <li key={f} className="text-sm text-[#9BA3AF] flex items-start gap-2.5">
+                            <Check className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" />
+                            <span>{f}</span>
                           </li>
                         ))}
                       </ul>
-                      <Button 
-                        disabled={loading || profile?.plan === plan.name}
-                        onClick={() => handleUpdatePlan(plan.name)}
-                        className={cn(
-                          "w-full h-12 rounded-xl font-bold",
-                          profile?.plan === plan.name ? "bg-[#242938] text-[#9BA3AF]" : "bg-[#C80313] hover:bg-[#E1061B] text-white"
-                        )}
-                      >
-                        {profile?.plan === plan.name ? 'PLANO ATUAL' : 'SELECIONAR PLANO'}
-                      </Button>
                     </CardContent>
-                  </Card>
-                ))}
+                  </div>
+                  <CardContent className="px-6 pb-6 pt-0 mt-6">
+                    <Button 
+                      disabled={loading || !isPro}
+                      onClick={() => handleUpdatePlan('free')}
+                      className={cn(
+                        "w-full h-12 rounded-xl font-bold transition-all",
+                        !isPro 
+                          ? "bg-[#242938] text-[#9BA3AF] cursor-not-allowed" 
+                          : "bg-transparent border border-[#242938] text-white hover:bg-[#151924] hover:border-[#C80313]"
+                      )}
+                    >
+                      {!isPro ? 'PLANO ATUAL' : PLAN_DETAILS.free.buttonText}
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                {/* Plano Pro (Destacado) */}
+                <Card className={cn(
+                  "bg-[#151924] border-2 transition-all duration-300 relative overflow-hidden group hover:scale-[1.02] flex flex-col justify-between",
+                  isPro 
+                    ? "border-[#C80313] shadow-[0_0_30px_rgba(200,3,19,0.3)]" 
+                    : "border-[#242938] hover:border-[#C80313]/60 shadow-[0_0_20px_rgba(0,0,0,0.3)]"
+                )}>
+                  {/* Selo Popular */}
+                  <div className="absolute top-0 right-0 bg-gradient-to-r from-[#C80313] to-red-500 text-white text-[9px] font-bold px-3.5 py-1.5 rounded-bl-lg uppercase tracking-wider flex items-center gap-1 shadow-md">
+                    {PLAN_DETAILS.pro.badge}
+                  </div>
+
+                  <div>
+                    <CardHeader className="p-6">
+                      <CardTitle className="text-white text-xl sm:text-2xl font-bold flex items-center gap-2">
+                        {PLAN_DETAILS.pro.name}
+                      </CardTitle>
+                      <div className="text-3xl font-extrabold text-white mt-2 flex items-baseline gap-1">
+                        {PLAN_DETAILS.pro.price}
+                        <span className="text-xs text-[#9BA3AF] font-normal uppercase tracking-wider">/mês</span>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="px-6 pb-6">
+                      <ul className="space-y-3.5">
+                        {PLAN_DETAILS.pro.features.map(f => (
+                          <li key={f} className="text-sm text-[#F5F7FA] flex items-start gap-2.5 font-medium">
+                            <Check className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" />
+                            <span>{f}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                  </div>
+                  <CardContent className="px-6 pb-6 pt-0 mt-6">
+                    <Button 
+                      disabled={loading || isPro}
+                      onClick={() => handleUpdatePlan('pro')}
+                      className={cn(
+                        "w-full h-12 rounded-xl font-bold transition-all shadow-[0_0_15px_rgba(200,3,19,0.2)]",
+                        isPro 
+                          ? "bg-[#242938] text-[#9BA3AF] cursor-not-allowed" 
+                          : "bg-[#C80313] hover:bg-[#E1061B] text-white hover:shadow-[0_0_25px_rgba(200,3,19,0.4)]"
+                      )}
+                    >
+                      {isPro ? 'PLANO ATUAL' : PLAN_DETAILS.pro.buttonText}
+                    </Button>
+                  </CardContent>
+                </Card>
               </div>
             )}
           </div>
@@ -317,4 +392,12 @@ export default function SettingsPage() {
       </div>
     </DashboardShell>
   )
+}
+
+export default function SettingsPage() {
+  return (
+    <Suspense fallback={<div className="text-center text-[#9BA3AF] py-12 animate-pulse">Carregando configurações...</div>}>
+      <SettingsContent />
+    </Suspense>
+  );
 }

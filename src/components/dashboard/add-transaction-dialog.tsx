@@ -9,6 +9,8 @@ import { Plus } from "lucide-react"
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import { useFinancial } from '@/lib/context/financial-context'
+import { useSubscription } from '@/hooks/useSubscription'
+import { useRouter } from 'next/navigation'
 
 export function AddTransactionDialog() {
   const [open, setOpen] = React.useState(false)
@@ -16,9 +18,22 @@ export function AddTransactionDialog() {
   const [paymentMethod, setPaymentMethod] = React.useState('pix')
   const { context } = useFinancial()
   const supabase = createClient()
+  const router = useRouter()
+  const { hasReachedTransactionLimit, refresh: refreshSub } = useSubscription()
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    
+    if (hasReachedTransactionLimit) {
+      toast.error('Limite de 100 lançamentos/mês atingido no Plano Gratuito!', {
+        description: 'Faça upgrade para o Plano Pro para lançamentos ilimitados.',
+        duration: 4000
+      })
+      router.push('/dashboard/settings?tab=subscription')
+      setOpen(false)
+      return
+    }
+
     setLoading(true)
 
     const formData = new FormData(e.currentTarget)
@@ -73,6 +88,7 @@ export function AddTransactionDialog() {
       }
 
       toast.success('Transação registrada!')
+      refreshSub()
       setOpen(false)
     }
     setLoading(false)

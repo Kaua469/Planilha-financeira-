@@ -16,26 +16,32 @@ import {
   Users,
   CreditCard,
   Menu,
-  X
+  X,
+  Lock
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Logo } from './logo'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { useSubscription } from '@/hooks/useSubscription'
+import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 
 const menuItems = [
-  { label: 'Dashboard', icon: LayoutDashboard, href: '/dashboard' },
-  { label: 'Transações', icon: ArrowLeftRight, href: '/dashboard/transactions' },
-  { label: 'Cartão de Crédito', icon: CreditCard, href: '/dashboard/credit-cards' },
-  { label: 'Assinaturas', icon: Users, href: '/dashboard/subscriptions' },
-  { label: 'Metas', icon: Target, href: '/dashboard/goals' },
-  { label: 'Relatórios', icon: FilePieChart, href: '/dashboard/reports' },
-  { label: 'Insights', icon: Lightbulb, href: '/dashboard/insights' },
-  { label: 'PDFs Financeiros', icon: FileText, href: '/dashboard/pdfs' },
+  { label: 'Dashboard', icon: LayoutDashboard, href: '/dashboard', premium: false },
+  { label: 'Transações', icon: ArrowLeftRight, href: '/dashboard/transactions', premium: false },
+  { label: 'Cartão de Crédito', icon: CreditCard, href: '/dashboard/credit-cards', premium: true },
+  { label: 'Assinaturas', icon: Users, href: '/dashboard/subscriptions', premium: true },
+  { label: 'Metas', icon: Target, href: '/dashboard/goals', premium: true },
+  { label: 'Relatórios', icon: FilePieChart, href: '/dashboard/reports', premium: true },
+  { label: 'Insights', icon: Lightbulb, href: '/dashboard/insights', premium: true },
+  { label: 'PDFs Financeiros', icon: FileText, href: '/dashboard/pdfs', premium: true },
 ]
 
 export function Sidebar() {
   const pathname = usePathname()
+  const router = useRouter()
+  const { isPro, loading } = useSubscription()
   const [collapsed, setCollapsed] = React.useState(false)
   const [mobileOpen, setMobileOpen] = React.useState(false)
 
@@ -96,27 +102,45 @@ export function Sidebar() {
             {menuItems.map((item) => {
               const Icon = item.icon
               const isActive = pathname === item.href
+              const isLocked = item.premium && !isPro
+
+              const handleClick = (e: React.MouseEvent) => {
+                if (isLocked) {
+                  e.preventDefault()
+                  toast.error(`O recurso "${item.label}" é exclusivo para assinantes do Plano Pro!`, {
+                    description: "Redirecionando para a página de planos...",
+                    duration: 3000
+                  })
+                  router.push('/dashboard/settings?tab=subscription')
+                }
+              }
               
               return (
                 <Link 
                   key={item.href} 
                   href={item.href}
+                  onClick={handleClick}
                   className={cn(
-                    "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group",
+                    "flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 group",
                     isActive 
                       ? "bg-[#C80313] text-white shadow-[0_0_15px_rgba(200,3,19,0.3)]" 
                       : "text-[#9BA3AF] hover:text-white hover:bg-[#151924] hover:shadow-[0_0_10px_rgba(200,3,19,0.1)] hover:border-l-2 hover:border-[#C80313]"
                   )}
                 >
-                  <Icon size={20} className={cn(
-                    "transition-colors duration-300",
-                    isActive ? "text-white" : "group-hover:text-[#C80313]"
-                  )} />
-                  {/* Always show labels on mobile, respect collapsed on desktop */}
-                  <span className={cn(
-                    "font-medium",
-                    collapsed ? "lg:hidden" : ""
-                  )}>{item.label}</span>
+                  <div className="flex items-center gap-3">
+                    <Icon size={20} className={cn(
+                      "transition-colors duration-300",
+                      isActive ? "text-white" : "group-hover:text-[#C80313]"
+                    )} />
+                    {/* Always show labels on mobile, respect collapsed on desktop */}
+                    <span className={cn(
+                      "font-medium",
+                      collapsed ? "lg:hidden" : ""
+                    )}>{item.label}</span>
+                  </div>
+                  {isLocked && (!collapsed || mobileOpen) && (
+                    <Lock size={12} className="text-[#C80313] group-hover:scale-110 transition-transform" />
+                  )}
                 </Link>
               )
             })}

@@ -152,7 +152,7 @@ export const FinancialReportPDF = ({ userName, month, year, data }: ReportProps)
     <Page size="A4" style={styles.page}>
       <View style={styles.header}>
         <View>
-          <Text style={styles.logo}>KADRON <Text style={styles.logoRed}>FINANCE</Text></Text>
+          <Text style={styles.logo}>Planilha <Text style={styles.logoRed}>Financeira</Text></Text>
           <Text style={{ fontSize: 10, color: '#9BA3AF', marginTop: 5 }}>RELATÓRIO FINANCEIRO MENSAL</Text>
         </View>
         <View style={{ alignItems: 'flex-end' }}>
@@ -208,7 +208,7 @@ export const FinancialReportPDF = ({ userName, month, year, data }: ReportProps)
 
       <View style={styles.footer}>
         <Text>Gerado em: {new Date().toLocaleDateString()}</Text>
-        <Text>Kadron Finance — O Futuro da sua Gestão</Text>
+        <Text>Planilha Financeira — O Futuro da sua Gestão</Text>
         <Text>Página 1 de 1</Text>
       </View>
     </Page>

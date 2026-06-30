@@ -9,7 +9,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Kadron Finance | Gestão Financeira Premium",
+  title: "Planilha Financeira | Gestão Financeira Premium",
   description: "O sistema completo para sua inteligência financeira pessoal e corporativa.",
 };
 

@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils'
 const steps = [
   {
     id: 1,
-    title: "Seja bem-vindo ao Kadron Finance",
+    title: "Seja bem-vindo ao Planilha Financeira",
     description: "Vamos configurar sua conta em poucos segundos.",
     fields: [
       { name: "income", label: "Qual sua renda mensal média?", type: "number", placeholder: "R$ 5.000,00" },
@@ -22,7 +22,7 @@ const steps = [
   {
     id: 2,
     title: "Seu principal objetivo",
-    description: "O que você deseja alcançar com o Kadron Finance?",
+    description: "O que você deseja alcançar com o Planilha Financeira?",
     fields: [
       { name: "goal", label: "Qual sua meta principal?", type: "text", placeholder: "Ex: Comprar um carro, Reserva de Emergência" },
       { name: "target", label: "Valor da meta?", type: "number", placeholder: "R$ 50.000,00" },

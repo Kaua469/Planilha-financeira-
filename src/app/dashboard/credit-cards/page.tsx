@@ -11,8 +11,11 @@ import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { useFinancial } from '@/lib/context/financial-context'
+import { useSubscription } from '@/hooks/useSubscription'
+import { PremiumLockOverlay } from '@/components/dashboard/premium-lock-overlay'
 
 export default function CreditCardPage() {
+  const { isPro, loading: loadingSub } = useSubscription()
   const [installments, setInstallments] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
@@ -23,8 +26,10 @@ export default function CreditCardPage() {
   const supabase = createClient()
 
   useEffect(() => {
-    fetchInstallments()
-  }, [context])
+    if (isPro) {
+      fetchInstallments()
+    }
+  }, [context, isPro])
 
   async function fetchInstallments() {
     setLoading(true)
@@ -91,6 +96,24 @@ export default function CreditCardPage() {
 
   // Lista de todos os meses disponíveis para o select
   const availableMonths = sortedEntries.map(([month]) => month)
+
+  if (loadingSub) {
+    return (
+      <DashboardShell>
+        <div className="flex items-center justify-center min-h-[400px] text-[#9BA3AF]">
+          Carregando informações da assinatura...
+        </div>
+      </DashboardShell>
+    )
+  }
+
+  if (!isPro) {
+    return (
+      <DashboardShell>
+        <PremiumLockOverlay featureName="Cartão de Crédito" />
+      </DashboardShell>
+    )
+  }
 
   return (
     <DashboardShell>

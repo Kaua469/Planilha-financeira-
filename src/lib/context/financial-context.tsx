@@ -16,13 +16,13 @@ export function FinancialProvider({ children }: { children: React.ReactNode }) {
 
   // Optional: persist in localStorage
   useEffect(() => {
-    const saved = localStorage.getItem('kadron-context') as ContextType
+    const saved = localStorage.getItem('planilha-context') as ContextType
     if (saved) setContext(saved)
   }, [])
 
   const handleSetContext = (newContext: ContextType) => {
     setContext(newContext)
-    localStorage.setItem('kadron-context', newContext)
+    localStorage.setItem('planilha-context', newContext)
   }
 
   return (

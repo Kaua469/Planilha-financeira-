@@ -39,7 +39,7 @@ export default function AboutPage() {
             Elevando o padrão da sua <span className="text-[#C80313]">gestão financeira.</span>
           </h1>
           <p className="text-xl text-[#9BA3AF]">
-            O Kadron Finance não é apenas uma planilha. É um ecossistema completo para quem exige organização extrema e performance visual.
+            A Planilha Financeira não é apenas uma planilha. É um ecossistema completo para quem exige organização extrema e performance visual.
           </p>
         </section>
 

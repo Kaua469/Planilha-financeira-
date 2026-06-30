@@ -1,8 +1,33 @@
+"use client"
+
+import React from 'react'
 import { DashboardShell } from "@/components/layout/dashboard-shell"
 import { Card, CardContent } from "@/components/ui/card"
 import { Lightbulb } from "lucide-react"
+import { useSubscription } from '@/hooks/useSubscription'
+import { PremiumLockOverlay } from '@/components/dashboard/premium-lock-overlay'
 
 export default function InsightsPage() {
+  const { isPro, loading: loadingSub } = useSubscription()
+
+  if (loadingSub) {
+    return (
+      <DashboardShell>
+        <div className="flex items-center justify-center min-h-[400px] text-[#9BA3AF]">
+          Carregando informações da assinatura...
+        </div>
+      </DashboardShell>
+    )
+  }
+
+  if (!isPro) {
+    return (
+      <DashboardShell>
+        <PremiumLockOverlay featureName="AI Insights" />
+      </DashboardShell>
+    )
+  }
+
   return (
     <DashboardShell>
       <div className="space-y-8">

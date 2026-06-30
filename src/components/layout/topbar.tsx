@@ -18,12 +18,14 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { toast } from 'sonner'
+import { useSubscription } from '@/hooks/useSubscription'
 
 export function Topbar() {
   const { context, setContext } = useFinancial()
   const supabase = createClient()
   const router = useRouter()
   const [profile, setProfile] = React.useState<any>(null)
+  const { isPro, loading: loadingSub } = useSubscription()
 
   React.useEffect(() => {
     supabase.auth.getUser().then((res: any) => {
@@ -34,6 +36,12 @@ export function Topbar() {
       }
     })
   }, [])
+
+  React.useEffect(() => {
+    if (!loadingSub && !isPro && context === 'corporate') {
+      setContext('personal')
+    }
+  }, [isPro, loadingSub, context, setContext])
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -57,7 +65,17 @@ export function Topbar() {
             Pessoal
           </Button>
           <Button 
-            onClick={() => setContext('corporate')}
+            onClick={() => {
+              if (!isPro) {
+                toast.error('O contexto Corporativo é exclusivo para o Plano Pro!', {
+                  description: 'Redirecionando para a página de planos...',
+                  duration: 3000
+                })
+                router.push('/dashboard/settings?tab=subscription')
+                return
+              }
+              setContext('corporate')
+            }}
             variant={context === 'corporate' ? 'default' : 'ghost'}
             className={context === 'corporate' ? 'bg-[#C80313] hover:bg-[#E1061B] h-7 sm:h-8 text-[10px] sm:text-xs px-2 sm:px-3' : 'h-7 sm:h-8 text-[10px] sm:text-xs text-[#9BA3AF] px-2 sm:px-3'}
           >
@@ -98,7 +116,7 @@ export function Topbar() {
           <DropdownMenuContent align="end" className="w-56 bg-[#151924] border-[#242938] text-white">
             <DropdownMenuLabel className="font-normal p-4">
               <div className="flex flex-col space-y-1">
-                <p className="text-sm font-bold leading-none">{profile?.full_name || 'Usuário Kadron'}</p>
+                <p className="text-sm font-bold leading-none">{profile?.full_name || 'Usuário'}</p>
                 <p className="text-xs leading-none text-[#9BA3AF]">{profile?.email}</p>
               </div>
             </DropdownMenuLabel>

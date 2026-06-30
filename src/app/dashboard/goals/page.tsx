@@ -12,6 +12,8 @@ import { toast } from 'sonner'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { useFinancial } from '@/lib/context/financial-context'
+import { useSubscription } from '@/hooks/useSubscription'
+import { PremiumLockOverlay } from '@/components/dashboard/premium-lock-overlay'
 
 // Barra de progresso customizada
 const CustomProgress = ({ value }: { value: number }) => (
@@ -24,6 +26,7 @@ const CustomProgress = ({ value }: { value: number }) => (
 )
 
 export default function GoalsPage() {
+  const { isPro, loading: loadingSub } = useSubscription()
   const [goals, setGoals] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [open, setOpen] = useState(false)
@@ -31,8 +34,10 @@ export default function GoalsPage() {
   const supabase = createClient()
 
   useEffect(() => {
-    fetchGoals()
-  }, [context])
+    if (isPro) {
+      fetchGoals()
+    }
+  }, [context, isPro])
 
   async function fetchGoals() {
     setLoading(true)
@@ -73,6 +78,24 @@ export default function GoalsPage() {
     if (!window.confirm('Excluir esta meta?')) return
     await supabase.from('goals').delete().eq('id', id)
     fetchGoals()
+  }
+
+  if (loadingSub) {
+    return (
+      <DashboardShell>
+        <div className="flex items-center justify-center min-h-[400px] text-[#9BA3AF]">
+          Carregando informações da assinatura...
+        </div>
+      </DashboardShell>
+    )
+  }
+
+  if (!isPro) {
+    return (
+      <DashboardShell>
+        <PremiumLockOverlay featureName="Metas Financeiras" />
+      </DashboardShell>
+    )
   }
 
   return (
