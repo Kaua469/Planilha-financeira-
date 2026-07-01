@@ -79,8 +79,8 @@ export const paymentService = {
   },
 
   /**
-   * Ativa ou altera o plano do usuário diretamente no banco de dados.
-   * Totalmente gratuito, sem integração com gateway de pagamento.
+   * Registra a solicitação de assinatura com status 'pending'.
+   * O plano só é ativado após aprovação manual do admin.
    */
   async processCheckout(plan: PlanType): Promise<{ success: boolean; subscription?: Subscription; error?: string }> {
     try {
@@ -89,15 +89,12 @@ export const paymentService = {
         return { success: false, error: 'Usuário não autenticado' };
       }
 
-      const nextBillingDate = new Date();
-      nextBillingDate.setMonth(nextBillingDate.getMonth() + 1); // Exatamente 1 mês a partir do dia que iniciou o pagamento
-
       const payload = {
         plan,
-        status: 'active' as SubscriptionStatus,
+        status: 'pending' as SubscriptionStatus, // Aguarda aprovação manual do admin
         subscription_id: null,
         started_at: new Date().toISOString(),
-        next_billing_date: plan === 'pro' ? nextBillingDate.toISOString() : null,
+        next_billing_date: null, // Será definido pelo admin ao aprovar
         updated_at: new Date().toISOString()
       };
 
@@ -112,11 +109,6 @@ export const paymentService = {
         console.error('Erro ao atualizar assinatura:', error);
         return { success: false, error: error.message };
       }
-
-      await supabase
-        .from('profiles')
-        .update({ role: 'user' })
-        .eq('id', user.id);
 
       return { success: true, subscription: data as Subscription };
     } catch (err: any) {

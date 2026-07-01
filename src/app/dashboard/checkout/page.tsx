@@ -32,18 +32,15 @@ function CheckoutContent() {
 
   const handleConfirmPayment = async () => {
     setLoading(true);
-    toast.info('Verificando confirmação do PIX...');
-    
-    // Pequena simulação de validação
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    toast.info('Registrando solicitação de pagamento...');
 
     const result = await paymentService.processCheckout(selectedPlan);
     
     if (result.success) {
-      toast.success(`${planInfo.name} ativado com sucesso!`);
+      toast.success('Solicitação enviada! Seu plano será ativado após confirmarmos o PIX.');
       router.push('/dashboard/settings?tab=subscription');
     } else {
-      toast.error(result.error || 'Erro ao ativar plano');
+      toast.error(result.error || 'Erro ao registrar solicitação');
       setLoading(false);
     }
   };
@@ -133,7 +130,6 @@ function CheckoutContent() {
               </div>
             </div>
 
-            {/* Botão de Confirmação */}
             <div className="pt-2 space-y-4">
               <Button 
                 disabled={loading}
@@ -141,15 +137,15 @@ function CheckoutContent() {
                 className="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-6 rounded-xl font-bold text-base shadow-[0_0_20px_rgba(16,185,129,0.2)] transition-all hover:scale-[1.01] flex items-center justify-center gap-2"
               >
                 {loading ? (
-                  'VERIFICANDO PAGAMENTO...'
+                  'REGISTRANDO SOLICITAÇÃO...'
                 ) : (
                   <>
-                    <Sparkles size={18} /> CONFIRMAR PAGAMENTO REALIZADO
+                    <Sparkles size={18} /> JÁ FIZ O PAGAMENTO VIA PIX
                   </>
                 )}
               </Button>
               <p className="text-[11px] text-[#9BA3AF] text-center">
-                Ao clicar em confirmar, seu plano Pro será ativado automaticamente no sistema.
+                Após clicar, seu pagamento será verificado manualmente. O plano Pro será ativado em até 24h após a confirmação do PIX.
               </p>
             </div>
           </CardContent>
